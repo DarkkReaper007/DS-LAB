@@ -1,0 +1,83 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct node {
+    int data;
+    struct node* left;
+    struct node* right;
+};
+
+struct node* createNode(int data) {
+    struct node* temp = (struct node*)malloc(sizeof(struct node));
+    temp->data = data;
+    temp->left = NULL;
+    temp->right = NULL;
+    return temp;
+}
+struct node* insert(struct node* root, int data) {
+    if (root == NULL) {
+        return createNode(data);
+    }
+    if (data < root->data) {
+        root->left = insert(root->left, data);
+    } else if (data > root->data) {
+        root->right = insert(root->right, data);
+    }
+    return root;
+}
+struct node* findMin(struct node* root) {
+    while (root->left != NULL) {
+        root = root->left;
+    }
+    return root;
+}
+struct node* inOrderSuccessor(struct node* root, struct node* target) {
+    
+    if (target->right != NULL) {
+        return findMin(target->right);
+    }
+    struct node* successor = NULL;
+    while (root != NULL) {
+        if (target->data < root->data) {
+            successor = root;  
+            root = root->left; 
+        } else if (target->data > root->data) {
+            root = root->right; 
+        } else {
+            break; 
+        }
+    }
+    return successor; 
+}
+void inorder(struct node* root) {
+    if (root != NULL) {
+        inorder(root->left);
+        printf("%d ", root->data);
+        inorder(root->right);
+    }
+}
+
+int main() {
+    struct node* root = NULL;
+    root = insert(root, 20);
+    root = insert(root, 10);
+    root = insert(root, 30);
+    root = insert(root, 5);
+    root = insert(root, 15);
+    root = insert(root, 25);
+    root = insert(root, 35);
+
+    printf("Inorder Traversal of the BST: ");
+    inorder(root);
+    printf("\n");
+
+    struct node* target = root->left->right; 
+    struct node* successor = inOrderSuccessor(root, target);
+    if (successor) {
+        printf("In-order Successor of %d is %d\n", target->data, successor->data);
+    } else {
+        printf("In-order Successor of %d does not exist\n", target->data);
+    }
+
+    return 0;
+}
